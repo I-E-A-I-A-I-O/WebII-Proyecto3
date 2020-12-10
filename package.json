@@ -9,6 +9,7 @@
     "connect-busboy": "0.0.2",
     "connect-multiparty": "^2.2.0",
     "cors": "^2.8.5",
+    "express-session": "^1.17.1"
     "email-validator": "^2.0.4",
     "express": "^4.17.1",
     "multer": "^1.4.2",
@@ -43,8 +44,5 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
-  },
-  "devDependencies": {
-    "express-session": "^1.17.1"
   }
 }
