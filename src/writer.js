@@ -74,7 +74,7 @@ class TweetWriter extends React.Component {
                 type = "originalPost";
             }
         }
-        fetch("https://twitterclone-webii-proyecto3.herokuapp.com/makeApost/postText", {
+        fetch("http://localhost:5000/makeApost/postText", {
              method:"POST",
             body: JSON.stringify({text:text.value, type:type}),
             credentials:"include",
@@ -87,7 +87,7 @@ class TweetWriter extends React.Component {
             if (this.state.sendMedia){
                 let form = document.querySelector("#mediaInput");
                 let formData = new FormData(form);
-                fetch("https://twitterclone-webii-proyecto3.herokuapp.com/makeApost/postMedia", {
+                fetch("http://localhost:5000/makeApost/postMedia", {
                     method:"POST",
                     body: formData,
                     credentials:"include",
@@ -123,7 +123,7 @@ class TweetWriter extends React.Component {
             message.innerHTML = "Character limit surpassed!";
         }
         else{
-            fetch("https://twitterclone-webii-proyecto3.herokuapp.com/DataEdition/editText", {
+            fetch("http://localhost:5000/DataEdition/editText", {
                 method:"POST",
                 credentials:"include",
                 body:JSON.stringify({id:this.props.tweetid, text:document.querySelector("#TextContent").value}),
@@ -136,7 +136,7 @@ class TweetWriter extends React.Component {
                     if (mediaState !== "Keep" && mediaState !== "Empty"){
                         let body = mediaState === "Change" || mediaState === "New" ? 
                         new FormData(document.querySelector("#mediaInput")) : "nada";
-                        fetch("https://twitterclone-webii-proyecto3.herokuapp.com/DataEdition/editMedia", {
+                        fetch("http://localhost:5000/DataEdition/editMedia", {
                             method:"POST",
                             credentials:"include",
                             body:body,
@@ -167,7 +167,7 @@ class TweetWriter extends React.Component {
         let text = document.querySelector("#TextContent");
         let imgPreview = document.querySelector("#imgPreview");
         let videoPreview = document.querySelector("#videoPreview");
-        fetch("https://twitterclone-webii-proyecto3.herokuapp.com/makeApost/getTweetById", {
+        fetch("http://localhost:5000/makeApost/getTweetById", {
             method:"POST",
             body:this.props.tweetid,
             credentials:"include"
@@ -176,7 +176,7 @@ class TweetWriter extends React.Component {
             text.value = json.text;
             if (json.filelocation){
                 this.setState({mediaState:"Keep"});
-                fetch("https://twitterclone-webii-proyecto3.herokuapp.com/fileManager/getPostMedia", {
+                fetch("http://localhost:5000/fileManager/getPostMedia", {
                     method:"POST",
                     body:json.filelocation,
                     credentials:"include"

@@ -74,18 +74,83 @@ const getUserTweets = (req, res) => {
         res.status(403).send("Unauthorized user.");
     }
     else{
-        let query = "SELECT * FROM tweets WHERE username = $1 ORDER BY tweet_date DESC";
-        let params = [req.body];
-        db.query(query, params, (err, success) => {
-            if (!err){
-                res.status(200).send(success.rows);
-            }
-            else{
-                console.log(err.error);
-                res.status(500).send(err);
-            }
-        })
+        if(req.session.username !== req.body){
+            checkVisibility([req.body], res, "single", req.session.username);
+        }
+        else{
+            doSelect(req.body, res);
+        }
     }
+}
+
+const checkVisibility = (username, res, from, sessionUser, tweets) => {
+    let query = "SELECT username, private FROM registeredUsers WHERE username = ANY($1::VARCHAR[])";
+    let params = [username];
+    db.query(query, params, (err, Results) => {
+        if (!err){
+            let privateResults = Results.rows;
+            let query = "SELECT followsuser FROM follows WHERE username = $1";
+            let params = [sessionUser];
+            db.query(query, params, (err, followsResults) => {
+                if (!err){
+                    let follows = followsResults.rows, results = [];
+                    for (let i = 0; i < privateResults.length; i++){
+                        if (privateResults[i].private){
+                            for(let n = 0; n < follows.length; n++){
+                                if (follows[n].followsuser === privateResults[n].username){
+                                    results.push(privateResults[i].username);
+                                    break;
+                                }
+                            }
+                        }
+                        else{
+                            results.push(privateResults[i].username);
+                        }
+                    }
+                    switch(from){
+                        case "single":{
+                            if (results.length === 0) res.status(200).send("empty");
+                            else doSelect(results[0], res);
+                            break;
+                        }
+                        case "text":{
+                            for (let i = 0; i < tweets.length; i++){
+                                if (!results.includes(tweets[i].username)){
+                                    if (tweets[i].username !== sessionUser)
+                                        tweets.splice(i, 1);
+                                }
+                            }
+                            res.status(200).send(tweets);
+                            break;
+                        }
+                        default:{
+                            break;
+                        }
+                    }
+                }
+                else{
+                    console.log(err);
+                }
+            })
+        }
+        else{
+            console.log(err);
+        }
+    })
+}
+
+const doSelect = (username, res) => {
+    let query = "SELECT * FROM tweets WHERE username = $1 ORDER BY tweet_date DESC";
+    let params = [username];
+    db.query(query, params, (err, success) => {
+        if (!err){
+            res.status(200).send(success.rows);
+        }
+        else{
+            console.log(err.error);
+            res.status(500).send(err);
+        }
+    })
 }
 
 const getTweetById = (req, res) => {
@@ -154,7 +219,14 @@ const getTweetByText = (req, res) => {
         let params = ['%' + req.body + '%'];
         db.query(query, params, (err, success) => {
             if (!err){
-                res.send(success.rows);
+                let usernames = [];
+                for  (let i = 0; i < success.rows.length; i++){
+                    if (!usernames.includes(success.rows[i].username)){
+                        if (success.rows[i].username !== req.session.username)
+                            usernames.push(success.rows[i].username);
+                    }
+                }
+                checkVisibility(usernames, res, "text", req.session.username, success.rows);
             }
             else{
                 res.status(500).send(err);
@@ -172,7 +244,14 @@ const getComments = (req, res) => {
         let params = [req.body, "comment"];
         db.query(query, params, (err, success) => {
             if (!err){
-                res.status(200).send(success.rows);
+                let usernames = [];
+                for  (let i = 0; i < success.rows.length; i++){
+                    if (!usernames.includes(success.rows[i].username)){
+                        if (success.rows[i].username !== req.session.username)
+                            usernames.push(success.rows[i].username);
+                    }
+                }
+                checkVisibility(usernames, res, "text", req.session.username, success.rows);
             }
             else{
                 res.status(500).send(err);

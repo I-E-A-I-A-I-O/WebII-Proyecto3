@@ -40,9 +40,11 @@ class EditPage extends React.Component{
                 </form>
                 <br/>
                 <input onClick={this.submit} type={"image"} style={{width:"50px"}} alt={"submit"} src={"https://image.flaticon.com/icons/png/512/223/223120.png"}/>
-                <label style={{position:"relative", left:"10px", top:"-20px", color:"greenyellow"}} >Save changes</label>
+                <label style={{position:"relative", left:"10px", top:"-20px", fontWeight:"bold", color:"greenyellow"}} >Save changes</label>
                 <img alt={""} onClick={this.submitDelete} style={{cursor:"pointer", width:"40px", position: "relative", left:"480px"}} src={"https://vectorified.com/images/delete-icon-png-4.png"}/>
                 <label style={{position:"relative", left:"490px", top:"-15px", color:"red", fontWeight:"bold"}} >Delete account</label>
+                <input type={"image"} style={{width:"25px"}}/>
+                <label id={"accountVisibilityLabel"} style={{position:"relative", left:"490px", top:"-15px", color:"skyblue", fontWeight:"bold"}} ></label>
             </div>
         )
     }
@@ -64,6 +66,28 @@ class EditPage extends React.Component{
                 break;
             }
         }
+    }
+    componentDidMount(){
+        this.fetchState();
+    }
+    fetchState = () => {
+        fetch("https://twitterclone-webii-proyecto3.herokuapp.com/DataEdition/getVisibility", {
+            method:"GET",
+            credentials:"include"
+        }).then(response => response.text())
+        .then(text => {
+            let label = document.querySelector("#accountVisibilityLabel");
+            if (text === "true") label.innerHTML = "Go public";
+            else label.innerHTML = "Go private";
+        })
+    }
+    setState = () => {
+        fetch("https://twitterclone-webii-proyecto3.herokuapp.com/DataEdition/setVisibility", {
+            method:"GET",
+            credentials:"include"
+        }).then(() => {
+            this.fetchState();
+        })
     }
     verifyUsernameInput = () =>{
         let usernameInput = document.querySelector('[name="username"]').value;

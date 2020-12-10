@@ -84,13 +84,14 @@ class Profile extends React.Component{
     componentDidMount() {
         if(document.cookie.split("username=")[1] !== this.props.username) {
             document.querySelector("#FollowButton").hidden = false;
+            this.getButtonState();
         }
         else{
             document.querySelector("#LogoutButton").hidden = false;
             document.querySelector("#editProfile").hidden = false;
+            ReactDOM.render(<TweetRenderer param={"userTweets"} body={this.props.username}/>, document.querySelector("#tweets"));
         }
         this.getProfile();
-        ReactDOM.render(<TweetRenderer param={"userTweets"} body={this.props.username}/>, document.querySelector("#tweets"));
     }
     goToEditPage = () =>{
         ReactDOM.render(<EditPage/>, document.querySelector("#SecondDiv"));
@@ -144,7 +145,6 @@ class Profile extends React.Component{
                 let url = URL.createObjectURL(response);
                 document.querySelector("#img").src = url;
             })
-            this.getButtonState();
         }
     }
     getButtonState = () => {
@@ -157,6 +157,26 @@ class Profile extends React.Component{
             let followButton = document.querySelector("#FollowButton");
             if (text === "True") followButton.innerHTML = "Unfollow";
             else if (text === "False") followButton.innerHTML = "Follow";
+            this.showTweets(text);
+        })
+    }
+    showTweets = (follows) => {
+        fetch("https://twitterclone-webii-proyecto3.herokuapp.com/DataEdition/getVisibility", {
+            method:"GET",
+            credentials:"include"
+        }).then(response => {
+            if (response.status === 200){
+                response.text().then(text => {
+                    if (text === "true"){
+                        if (follows === "True"){
+                            ReactDOM.render(<TweetRenderer param={"userTweets"} body={this.props.username}/>, document.querySelector("#tweets"));
+                        }
+                    }
+                    else{
+                        ReactDOM.render(<TweetRenderer param={"userTweets"} body={this.props.username}/>, document.querySelector("#tweets"));
+                    }
+                })
+            }
         })
     }
     getFollowsCount = () => {

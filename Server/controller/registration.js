@@ -4,7 +4,7 @@ const emailValidator = require("email-validator");
 const multiparty = require("multiparty");
 
 const registerUser = (Username, Email, Password, res) => {
-    let queryString = "INSERT INTO registeredUsers(username, email, password) VALUES($1, $2, $3)";
+    let queryString = "INSERT INTO registeredUsers(username, email, password, private) VALUES($1, $2, $3, 'false')";
     let params = [Username, Email, encryptor.encrypt(Password)];
     db.query(queryString, params, (err) => {
         if (err){

@@ -242,4 +242,43 @@ const deleteAccount = (req, res) => {
     })
 }
 
-module.exports = {editTweetText, editTweetMedia, changeUserData, deleteTweet, verifyInput, deleteAccount}
+const accountState = (req, res) => {
+    getVisibility(req.session.username, false, res);
+}
+
+const getVisibility = (username, change, response) => {
+    let query = "SELECT private FROM registeredUsers WHERE username = $1";
+    let params = [username];
+    db.query(query, params, (err, res) => {
+        if (!err){
+            if (change) submitState(username, res.rows[0].private, response);
+            else{
+                if (res.rows[0].private) response.status(200).send("true");
+                else response.status(200).send("false");
+            }
+        }
+        else{
+            return null;
+        }
+    })
+}
+
+const submitState = (username, state, res) => {
+    let query, params = [];
+    query = "UPDATE registeredUsers SET private = $1 WHERE username = $2";
+    params = [!state, username];
+    db.query(query, params, (err) => {
+        if (!err){
+            res.status(200).send("Visibility changed");
+        }
+        else{
+            res.status(500).send(err);
+        }
+    })
+}
+
+const changeState = (req, res) => {
+    getVisibility(req.session.username, true, res);
+}
+
+module.exports = {editTweetText, changeState, accountState, editTweetMedia, changeUserData, deleteTweet, verifyInput, deleteAccount}
