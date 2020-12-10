@@ -9,14 +9,14 @@ const changeAvatar = (req, res) => {
     }
     else{
         let form = new multiparty.Form();
-        if (fs.existsSync("media/avatars/" + req.session.username)){
-            del.sync("media/avatars/" + req.session.username);
+        if (fs.existsSync("Server/media/avatars/" + req.session.username)){
+            del.sync("Server/media/avatars/" + req.session.username);
         }
         form.parse(req, (err, fields, files) => {
             let type = files.newAvatar[0].originalFilename.split(".")[1];
-            let filePath = "media/avatars/" + req.session.username;
+            let filePath = "Server/media/avatars/" + req.session.username;
             fs.mkdirSync(filePath);
-            let absolutePath = "media/avatars/" + req.session.username + "/" + req.session.username + "." + type;
+            let absolutePath = "Server/media/avatars/" + req.session.username + "/" + req.session.username + "." + type;
             fs.renameSync(files.newAvatar[0].path, absolutePath);
             let query = "UPDATE registeredUsers SET hasavatar = $1, avatarpath = $2 WHERE username = $3";
             let params = [true, absolutePath, req.session.username];
@@ -41,7 +41,7 @@ const downloadAvatar = (req, res) => {
             let query = "SELECT hasavatar, avatarpath FROM registeredUsers WHERE username = $1";
             let params = [req.body];
             db.query(query, params, (err, success) => {
-                let path = "media/avatars/noAvatar.jpeg";
+                let path = "Server/media/avatars/noAvatar.jpeg";
                 if (!err){
                     if(success.rows[0].hasavatar){
                         if (fs.existsSync(success.rows[0].avatarpath)){
