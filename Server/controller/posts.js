@@ -47,17 +47,24 @@ const parseFile = (req, res, username, tweetid) => {
         let filePath = "Server/media/tweets/" + username + "/" + tweetid;
         fs.mkdirSync(filePath, {recursive: true});
         let absolutePath = filePath + "/" + req.session.username + "." + type;
-        fs.renameSync(files.tweetMedia[0].path, absolutePath);
+        fs.readFile(files.tweetMedia[0].path, (err, data) => {
+            if (err) console.log(err);
+            else{
+                fs.writeFile(absolutePath, data, (err) => {
+                    if (err) console.log(err);
+                })
+                fs.unlink(files.tweetMedia[0].path, (err) => {
+                    if (err) console.log(err);
+                })
+            }
+        })
         let query = "UPDATE tweets SET filelocation = $1 WHERE tweetid = $2";
         let params = [absolutePath, tweetid];
-        db.query(query, params, (err) => {
-            if (!err){
-                res.status(200).send("Tweet posted.");
-            }
-            else{
-                console.log(err.error);
-                res.status(500).send(err);
-            }
+        db.queryAsync(query, params).then( () => {
+            res.status(200).send("Tweet posted.");
+        }).catch (err => {
+            console.log(err);
+            res.status(500).send(err);
         })
     })
 }

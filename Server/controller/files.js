@@ -17,13 +17,24 @@ const changeAvatar = (req, res) => {
             let filePath = "Server/media/avatars/" + req.session.username;
             fs.mkdirSync(filePath);
             let absolutePath = "Server/media/avatars/" + req.session.username + "/" + req.session.username + "." + type;
-            fs.renameSync(files.newAvatar[0].path, absolutePath);
+            fs.readFile(files.newAvatar[0].path, (err, data) => {
+                if (err) res.status(500).send(err);
+                else{
+                    fs.writeFile(absolutePath, data, (err) => {
+                        if (err) res.status(500).send(err);
+                        else{
+                            res.status(200).send("Profile picture updated.");
+                        }
+                    })
+                    fs.unlink(files.newAvatar[0].path, (err) => {
+                        if (err) console.log(err);
+                    });
+                }
+            })
             let query = "UPDATE registeredUsers SET hasavatar = $1, avatarpath = $2 WHERE username = $3";
             let params = [true, absolutePath, req.session.username];
-            db.query(query, params, (err) => {
-                if (!err){
-                    res.status(200).send("Profile picture updated.");
-                }
+            db.queryAsync(query, params).catch(err => {
+                console.log(err);
             })
         })
     }
