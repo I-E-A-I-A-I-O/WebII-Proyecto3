@@ -44,7 +44,7 @@ const parseFile = (req, res, username, tweetid) => {
     let form = new multiparty.Form();
     form.parse(req, (err, fields, files) => {
         let type = files.tweetMedia[0].originalFilename.split(".")[1];
-        let filePath = "media/tweets/" + username + "/" + tweetid;
+        let filePath = "Server/media/tweets/" + username + "/" + tweetid;
         fs.mkdirSync(filePath, {recursive: true});
         let absolutePath = filePath + "/" + req.session.username + "." + type;
         fs.renameSync(files.tweetMedia[0].path, absolutePath);
