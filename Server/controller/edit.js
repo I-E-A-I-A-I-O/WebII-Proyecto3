@@ -84,8 +84,8 @@ const deleteTweet = (req, res) => {
 }
 
 const deleteFile = (id, username) => {
-    let path = "media/tweets/" + username + "/" + id;
-    del.sync([path + "/**", "!media/tweets/" + username]);
+    let path = "Server/media/tweets/" + username + "/" + id;
+    del.sync([path + "/**", "!Server/media/tweets/" + username]);
 }
 
 const verifyInput = (req, res) => {
@@ -231,8 +231,8 @@ const separateData = (field) => {
 const deleteAccount = (req, res) => {
     let promises = [], query = "DELETE FROM registeredUsers WHERE username = $1", 
     params = [req.session.username];
-    if (fs.existsSync("media/tweets/" + req.session.username)){
-        promises.push(del(["media/tweets/" + req.session.username + "/**", "!media/tweets"]));
+    if (fs.existsSync("Server/media/tweets/" + req.session.username)){
+        promises.push(del(["Server/media/tweets/" + req.session.username + "/**", "!Server/media/tweets"]));
     }
     promises.push(db.queryAsync(query, params));
     Promise.all(promises).then(response => {
