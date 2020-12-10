@@ -43,7 +43,7 @@ class EditPage extends React.Component{
                 <label style={{position:"relative", left:"10px", top:"-20px", fontWeight:"bold", color:"greenyellow"}} >Save changes</label>
                 <img alt={""} onClick={this.submitDelete} style={{cursor:"pointer", width:"40px", position: "relative", left:"480px"}} src={"https://vectorified.com/images/delete-icon-png-4.png"}/>
                 <label style={{position:"relative", left:"490px", top:"-15px", color:"red", fontWeight:"bold"}} >Delete account</label>
-                <input type={"image"} alt={""} src={"http://www.orion.on.ca/wp-content/uploads/2016/01/Security-Lock.png"} onClick={this.setState} style={{width:"25px"}}/>
+                <input type={"image"} alt={""} src={"http://www.orion.on.ca/wp-content/uploads/2016/01/Security-Lock.png"} onClick={this.setState} style={{width:"50px"}}/>
                 <label id={"accountVisibilityLabel"} style={{position:"relative", left:"20px", top:"-15px", color:"skyblue", fontWeight:"bold"}} ></label>
             </div>
         )
