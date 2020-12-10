@@ -4,12 +4,11 @@ const fileManager = require("./route/files");
 const profileManager = require("./route/profileData");
 const posts = require("./route/posts");
 const dataEdit = require("./route/edit");
-const https = require("https");
 const path = require("path");
 const session = require("express-session");
 
 const app = express();
-const port = 5000;
+const port = process.env.PORT || 5000;
 
 app.use(express.static('public'));
 app.use(express.text());
