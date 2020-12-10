@@ -32,7 +32,7 @@ app.use("/profileData", profileManager);
 app.use("/makeApost", posts);
 app.use("/DataEdition", dataEdit);
 
-app.get('/*', (req, res) => {
+app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, 'build', 'index.html'));
 })
 
